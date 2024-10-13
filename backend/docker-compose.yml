@@ -1,0 +1,23 @@
+services:
+  fastapi-service:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    ports:
+      - "8080:8000"
+    depends_on:
+      - sqlite-db
+    volumes:
+      - shared-db:/db
+    # volumes:
+    #   - ./db:/db
+
+  sqlite-db:
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
+    volumes:
+      - shared-db:/db
+
+volumes:
+  shared-db:
