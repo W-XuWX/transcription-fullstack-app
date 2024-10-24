@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_APP_BACKEND_ADDRESS=http://localhost/api
+    depends_on:
+      - fastapi-service
+
+  fastapi-service:
+    build:
+      context: ./backend/app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8000"
+    env_file:
+      - ./backend/app/.env
+    depends_on:
+      - sqlite-db
+    volumes:
+      - shared-db:/db
+
+  sqlite-db:
+    build:
+      context: ./backend/db
+      dockerfile: Dockerfile
+    volumes:
+      - shared-db:/db
+
+volumes:
+  shared-db:

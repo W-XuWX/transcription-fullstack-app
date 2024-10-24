@@ -1,5 +1,7 @@
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Config(BaseSettings):
     model_config = SettingsConfigDict(
@@ -10,6 +12,9 @@ class Config(BaseSettings):
     )
     db_drivername: str
     db_database: str
+    model: str
+    device: str
+
 
 @lru_cache
 def get_config():
