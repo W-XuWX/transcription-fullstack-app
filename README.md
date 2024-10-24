@@ -20,3 +20,9 @@ Frontend: localhost:3000
 Backend: localhost:8080/docs
 
 # TODO
+
+- Add architecture diagram, design considerations
+- Add unit tests
+- Frontend: Dynamic website sizing
+- Frontend: Improve UI (Add loading wheel when transcribe button is pressed)
+- Backend: Improve search results
