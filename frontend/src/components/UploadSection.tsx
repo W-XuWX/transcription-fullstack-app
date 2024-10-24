@@ -25,13 +25,13 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
   };
 
   return (
-    <Card className="bg-white/10 border-0">
-      <CardContent className="p-6">
+    <Card className="bg-white/10 border-0 h-full">
+      <CardContent className="p-6 h-full flex flex-col">
         <h2 className="text-xl font-semibold text-white mb-4">
           Upload Audio Files
         </h2>
 
-        <div className="space-y-4">
+        <div className="flex flex-col h-full gap-4">
           <input
             type="file"
             ref={fileInputRef}
@@ -41,23 +41,25 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
             className="hidden"
           />
 
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full"
-            variant="secondary"
-          >
-            Upload files
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1"
+              variant="secondary"
+            >
+              Upload files
+            </Button>
 
-          <Button
-            onClick={onTranscribe}
-            className="w-full"
-            disabled={selectedFiles.length === 0}
-          >
-            Transcribe
-          </Button>
+            <Button
+              onClick={onTranscribe}
+              className="flex-1"
+              disabled={selectedFiles.length === 0}
+            >
+              Transcribe
+            </Button>
+          </div>
 
-          <div className="min-h-[200px] bg-white/5 rounded-lg p-4">
+          <div className="flex-1 bg-white/5 rounded-lg p-4 overflow-y-auto">
             {selectedFiles.map((file) => (
               <div key={file.name} className="text-white">
                 {file.name}

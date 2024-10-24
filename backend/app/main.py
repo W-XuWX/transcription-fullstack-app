@@ -1,11 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
 
-import torch
 import uvicorn
 from config import get_config
 from database import DBClient
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routers import transcribe
 from models import Base
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
@@ -64,12 +64,22 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Allow requests from your frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Adjust the port if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(transcribe.router)
 
 
 @app.get("/health", status_code=200)
 def get_health():
-    return {"status": "Service is healthy! ^_^"}
+    return {"status": "Healthy"}
 
 
 if __name__ == "__main__":

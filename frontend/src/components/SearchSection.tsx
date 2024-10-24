@@ -32,13 +32,13 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
   isSearching,
 }) => {
   return (
-    <Card className="bg-white/10 border-0">
-      <CardContent className="p-6">
+    <Card className="bg-white/10 border-0 h-full">
+      <CardContent className="p-6 h-full flex flex-col">
         <h2 className="text-xl font-semibold text-white mb-4">
           Transcription Search
         </h2>
 
-        <div className="space-y-4">
+        <div className="flex flex-col h-full gap-4">
           <div className="relative">
             <Input
               placeholder="Search Text"
@@ -53,7 +53,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
             )}
           </div>
 
-          <div className="min-h-[200px] bg-white/5 rounded-lg p-4 space-y-4 overflow-y-auto max-h-[400px]">
+          <div className="flex-1 bg-white/5 rounded-lg p-4 space-y-4 overflow-y-auto">
             {searchResults.map((result, index) => (
               <div
                 key={index}

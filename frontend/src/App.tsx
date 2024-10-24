@@ -71,12 +71,11 @@ const App: React.FC = () => {
 
         const data = await response.json();
 
-        // Transform the data to match the SearchResult interface
         const transformedResults = data.map((result: any) => ({
           id: result.id,
           fileName: result.file_name,
           content: result.transcription,
-          timestamp: new Date().toISOString(), // Add proper timestamp if available
+          timestamp: new Date().toISOString(),
           highlights: result.highlights,
         }));
 
@@ -91,10 +90,11 @@ const App: React.FC = () => {
 
     performSearch();
   }, [debouncedSearchTerm]);
+
   const handleSearchChange = (term: string) => {
-    // Prevent default form submission behavior
     setSearchTerm(term);
   };
+
   const handleTranscribe = async () => {
     if (selectedFiles.length === 0) return;
 
@@ -120,28 +120,36 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-4 text-center">
-          Audio Transcription App
-        </h1>
-        <ServerHealth status={serverHealth} />
+    <div className="h-screen bg-black flex">
+      {/* Left column - 1/3 width */}
+      <div className="w-1/3 min-w-[300px] flex flex-col border-r border-white/10">
+        {/* Top left section - Title */}
+        <div className="p-6 border-b border-white/10">
+          <h1 className="text-2xl font-bold text-white mb-6">
+            Audio Transcription App
+          </h1>
+          <ServerHealth status={serverHealth} />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Bottom left section - Upload */}
+        <div className="flex-1 p-6 overflow-auto">
           <UploadSection
             selectedFiles={selectedFiles}
             onFilesSelect={setSelectedFiles}
             onTranscribe={handleTranscribe}
             transcriptionStatus={transcriptionStatus}
           />
-
-          <SearchSection
-            searchTerm={searchTerm}
-            onSearchTermChange={handleSearchChange}
-            searchResults={searchResults}
-            isSearching={isSearching}
-          />
         </div>
+      </div>
+
+      {/* Right column - 2/3 width */}
+      <div className="flex-1 p-6">
+        <SearchSection
+          searchTerm={searchTerm}
+          onSearchTermChange={handleSearchChange}
+          searchResults={searchResults}
+          isSearching={isSearching}
+        />
       </div>
     </div>
   );
