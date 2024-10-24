@@ -4,7 +4,7 @@ from typing import Annotated, List, Optional
 import soundfile as sf
 import torch
 import librosa
-from fastapi import APIRouter, File, Request, UploadFile, Query
+from fastapi import APIRouter, File, Request, UploadFile, Query, HTTPException
 from models import Results
 from pydantic import BaseModel
 from werkzeug.utils import secure_filename
@@ -32,8 +32,6 @@ class SearchResult(BaseModel):
     file_name: str
     transcription: str
     highlights: List[dict]
-    rank: float
-
 
 @router.post("/transcribe", status_code=200, response_model=BatchTranscriptionResponse)
 async def transcribe_audio_files(
@@ -124,28 +122,35 @@ async def search_transcriptions(
     search_query = ' OR '.join(f'"{term}"' for term in q.strip().split())
     
     # SQL query using SQLite FTS5
-    sql_query = """
+    from sqlalchemy import text
+    sql_query = text("""
     SELECT 
         id,
         file_name,
         transcription,
-        rank,
-        highlight(results_search, 2, '<mark>', '</mark>') as highlighted_text
+        highlight(results_search, 2, '<mark>', '</mark>') AS highlighted_text
     FROM results_search
-    WHERE results_search MATCH :query
-    ORDER BY rank
+    WHERE transcription MATCH :query
     LIMIT :limit OFFSET :offset
-    """
-    
-    results = session.execute(
-        sql_query,
-        {
-            'query': search_query,
-            'limit': limit,
-            'offset': offset
-        }
-    ).fetchall()
-    
+    """)
+
+    try:
+        # Execute the query and fetch results
+        results = session.execute(
+            sql_query,
+            {
+                'query': search_query,
+                'limit': limit,
+                'offset': offset
+            }
+        ).fetchall()  
+    except Exception as e:
+        # Handle database errors
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
     search_results = []
     for row in results:
         # Extract highlight positions from the marked text
@@ -177,7 +182,6 @@ async def search_transcriptions(
             file_name=row.file_name,
             transcription=row.transcription,
             highlights=highlights,
-            rank=row.rank
         ))
     
     return search_results

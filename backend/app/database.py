@@ -25,14 +25,15 @@ class DBClient:
     def init_fts(self):
         """Initialize FTS tables and triggers"""
         try:
+            # Drop the existing FTS table if it exists
+            self.session.execute(text("DROP TABLE IF EXISTS results_search;"))
+
             # Create FTS virtual table if it doesn't exist
             self.session.execute(text("""
-                CREATE VIRTUAL TABLE IF NOT EXISTS results_search USING fts5(
+                CREATE VIRTUAL TABLE results_search USING fts5(
                     id,
                     file_name,
-                    transcription,
-                    content=results,
-                    content_rowid=id
+                    transcription
                 )
             """))
 
