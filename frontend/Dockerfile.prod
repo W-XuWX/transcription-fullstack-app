@@ -1,0 +1,31 @@
+# Stage 1: Build the React app
+FROM node:20-alpine as builder
+WORKDIR /app
+
+# Copy package.json and package-lock.json first, to leverage Docker cache
+COPY package.json package-lock.json ./
+
+# Install dependencies, including dev dependencies
+RUN npm install
+
+# Copy the rest of the source code
+COPY . .
+
+
+# Build the Vite project
+RUN npm run build
+
+# Stage 2: Serve the production build with NGINX
+FROM nginx:1.25.4-alpine-slim as prod
+
+# Copy build files to NGINX html directory
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Use custom NGINX configuration (optional)
+COPY nginx.conf /etc/nginx/conf.d
+
+# Expose port 3000 (or the default NGINX port 80 if desired)
+EXPOSE 3000
+
+# Run NGINX server in foreground
+CMD ["nginx", "-g", "daemon off;"]
